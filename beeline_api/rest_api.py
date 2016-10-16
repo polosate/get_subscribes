@@ -4,7 +4,6 @@ def get_beeline_token(login, password):
     """
     По логину и паролю по api beeline получаем токен билайна
     """ 
-
     url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (login, password)
     
     res = requests.get(url)
@@ -31,18 +30,16 @@ def get_personal_info(beeline_token, login, ctn):
 
 
 def get_subscribes(beeline_token, ctn):
-    url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
+    is_stub = False
+    if is_stub:
+        url = 'http://127.0.0.1:5050/'
+    else:
+        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
+        
     cookies = {'token': beeline_token}
     response = requests.get(url, cookies=cookies)
     subscribes_list = response.json()['subscriptions']
-# {
-#     "meta": {
-#         "status": "OK",
-#         "code": 20000,
-#         "message": null
-#     },
-#     "subscriptions": []
-# }
+
     if len(subscribes_list) == 0:
         return "Подписок нет"
     else:

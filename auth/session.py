@@ -23,7 +23,8 @@ def check_token(token):
         return False
 
 
-def get_session(): pass
+def get_session(token):
+    return sessions.get(token)
 
 
 def set_session(session, token):
@@ -34,4 +35,4 @@ class Session():
     def __init__(self, beeline_token, login, ctn):
         self.beeline_token = beeline_token
         self.login = login
-        self.cnt = ctn
+        self.ctn = ctn
