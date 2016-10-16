@@ -2,7 +2,7 @@ import requests
 
 def get_beeline_token(login, password):
     """
-    По логину и паролю по api beeline получаем токен
+    По логину и паролю по api beeline получаем токен билайна
     """ 
 
     url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (login, password)
@@ -24,15 +24,29 @@ def get_personal_info(beeline_token, login, ctn):
     url = 'https://my.beeline.ru/api/1.0/sso/contactData?login=%s&ctn=%s' % (login, ctn)
     cookies = {'token': beeline_token}
     contact_data = requests.get(url, cookies=cookies)
-    return contact_data.json()
+    try:
+        return contact_data.json(), None
+    except Exception:
+        return None, "user_info json error" 
 
 
 def get_subscribes(beeline_token, ctn):
-    url = 'https://my.beeline.ru/api/1.0/info/subscriptions?%s' % ctn
+    url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
     cookies = {'token': beeline_token}
-    contact_data = requests.get(url, cookies=cookies)
-    subscribes_list = requests.get(url)
-    return subscribes_list
+    response = requests.get(url, cookies=cookies)
+    subscribes_list = response.json()['subscriptions']
+# {
+#     "meta": {
+#         "status": "OK",
+#         "code": 20000,
+#         "message": null
+#     },
+#     "subscriptions": []
+# }
+    if len(subscribes_list) == 0:
+        return "Подписок нет"
+    else:
+        return subscribes_list
 
 
 if __name__ == '__main__':
