@@ -38,7 +38,7 @@ def get_subscribes(beeline_token, ctn):
         
     cookies = {'token': beeline_token}
     response = requests.get(url, cookies=cookies)
-    subscribes_list = response.json()['subscriptions']
+    subscribes_list = response.json().get('subscriptions')
 
     if len(subscribes_list) == 0:
         return "Подписок нет"
