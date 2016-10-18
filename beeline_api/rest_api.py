@@ -19,8 +19,9 @@ def get_beeline_token(login, password):
         return None, "Error_%s" % res.status_code
 
 
-def get_personal_info(beeline_token, login, ctn):
-    url = 'https://my.beeline.ru/api/1.0/sso/contactData?login=%s&ctn=%s' % (login, ctn)
+# Убрать, ненужная функция, написана для тренировки
+def get_personal_info(beeline_token, login):
+    url = 'https://my.beeline.ru/api/1.0/sso/contactData?login=%s' % (login)
     cookies = {'token': beeline_token}
     contact_data = requests.get(url, cookies=cookies)
     try:
@@ -34,16 +35,31 @@ def get_subscribes(beeline_token, ctn):
     if is_stub:
         url = 'http://127.0.0.1:5050/'
     else:
-        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
+        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn        
         
     cookies = {'token': beeline_token}
     response = requests.get(url, cookies=cookies)
-    subscribes_list = response.json().get('subscriptions')
+    try:
+        response = response.json()
+        if response.get('meta').get('code') == 20000:
+            subscribes_list = response.get('subscriptions')
+            if len(subscribes_list) == 0:
+                result = "Подписок нет"
+                return result, None
+            else:
+                result = subscribes_list
+                return result, None
+        else:
+            result = response.get('meta').get('message')   
+            return None, result         
 
-    if len(subscribes_list) == 0:
-        return "Подписок нет"
-    else:
-        return subscribes_list
+    except Exception:
+        return None, "Error_%s" % response.status_code
+
+
+
+# https://my.beeline.ru/api/1.0/info/serviceAvailableList?ctn=9060447044
+def get_available_subscriptions(): pass
 
 
 if __name__ == '__main__':
