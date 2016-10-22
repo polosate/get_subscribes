@@ -9,28 +9,12 @@ from .app import app
 # перенести все рендеры в отдельные темлэйты
 def render_login_form(args):
     return render_template('login.html', error=args.get('error'))
+    
 
 # перенести все рендеры в отдельные темлэйты
 def render_dashboard_page(user_info, subscriptions_list=None, subscriptions_str = None, errors=None):
     return render_template('dashboard.html', user_info=user_info, subscriptions_list=subscriptions_list, \
         subscriptions_str = subscriptions_str,errors=errors)
-    # try:
-    #     template = """
-    #         <h2>Добро пожаловать, %(firstName)s %(lastName)s!</h2>
-    #         <p><b>Ваш адрес:</b> <i>%(invoiceAddr)s</i></p>
-    #     """
-    #     body = template % user_info
-    #     body += """
-    #         <p>Ваши подписки:</p>
-    #         <p>%s</p>
-    #     """ % subscriptions
-    # except (KeyError, ValueError):
-    #     template = """
-    #         <h2>%S</h2>
-    #     """ % user_info
-    #     body = template
-
-    # return body
 
 
 @app.route('/', methods=['POST', 'GET'])
