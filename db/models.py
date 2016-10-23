@@ -8,8 +8,7 @@ login = 'postgres'
 password = 'postgres'
 host = 'localhost'
 port = 5432
-schema = 'get_subscriptions'
-
+schema = 'get_subscriptions'    
 
 url = 'postgresql://{}:{}@{}:{}/{}'.format(login, password, host, port, schema)
 engine = create_engine(url)
@@ -28,7 +27,7 @@ class User(Base):
     last_name = Column(String(50))
     email = Column(String(120), unique = True)
     ctn = Column(String(11), unique = True)
-    login = Column(String(50))
+    login = Column(String(50), unique = True)
     passwd = Column(String(50))
 
     def __init__(self, first_name = None, last_name = None, email = None, ctn = None, login = None, passwd = None):
@@ -40,26 +39,21 @@ class User(Base):
         self.passwd = passwd
 
     def __repr__(self):
-        return '<User {} {}>'.format(self.first_name, self.last_name)
+        return '<User {} {}>'.format(self.login, self.ctn)
+
 
 class Session(Base):
     __tablename__ = 'sessions'
     token = Column(String(20), primary_key = True)
-    session = Column(Text)
-    user_id = -1
+    user_id = Column(Integer, ForeignKey('users.id'))
+    beeline_token = Column(String)
 
-    def __init__(self, token = None, session = None):
+    def __init__(self, token = None, user_id = None, beeline_token = None):
         self.token = token
-        self.session = session
+        self.user_id = user_id
+        self.beeline_token = beeline_token
 
-    def load(self):
-        sess = self.query.filter('token' == self.token).first()
+    def get_ctn(self):
+        return db_session.query(User).filter(User.id==self.user_id).first().ctn
 
-    # def check_token(self, token):
-    #     pass
 
-    # def get_session():
-    #     pass
-
-    # def set_session():
-    #     pass

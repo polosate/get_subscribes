@@ -19,17 +19,6 @@ def get_beeline_token(login, password):
         return None, "Error_%s" % res.status_code
 
 
-# Убрать, ненужная функция, написана для тренировки
-def get_personal_info(beeline_token, login):
-    url = 'https://my.beeline.ru/api/1.0/sso/contactData?login=%s' % (login)
-    cookies = {'token': beeline_token}
-    contact_data = requests.get(url, cookies=cookies)
-    try:
-        return contact_data.json(), None
-    except Exception:
-        return None, "user_info json error" 
-
-
 def get_subscribes(beeline_token, ctn):
     is_stub = False
     if is_stub:

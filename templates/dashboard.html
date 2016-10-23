@@ -8,8 +8,6 @@
 
 <body>
     
-    <h2>Привет, {{ user_info.firstName }} {{ user_info.lastName }}!</h2>
-    <p><b>Ваш адрес:</b> <i>{{ user_info.invoiceAddr }}</i></p>
     {% if errors %}
         <p>При получении ваших подписок произошла ошибка:</p>
         <p>{{ errors }}</p>
