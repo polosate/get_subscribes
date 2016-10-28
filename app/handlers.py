@@ -41,8 +41,8 @@ def index():
 def login():
     print('START!!!!!')
     if request.method == 'GET':
-        form = LoginForm()
-        return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
+            form = LoginForm()
+            return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
     
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('dashboard'))
@@ -52,30 +52,34 @@ def login():
     if not form.validate_on_submit(): 
         ctn = form.ctn1.data
         ctn_list = global_ctns()
-        print ("ctn in list = ", ctn in ctn_list)
         if not ctn in ctn_list:
             return redirect(url_for('login', error="Номера нет в базе"))  
         session['ctn'] = ctn
         session['remember_me'] = form.remember_me.data
-
-        print("ctn = ", session['ctn'])
-        print("r_m = ",session['remember_me'])
        
         return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
+
+
     # return render_template('login.html', 
     #   title = 'Sign In',
     #   form = form,
     #   providers = app.config['OPENID_PROVIDERS'])
 
-    return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
+    # return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def registration(): pass
+
 
 
 @oid.after_login
 def after_login(resp):
     if 'ctn' in session:
         ctn = session['ctn']
-        print("ctn2 = ",ctn)
+        print()
     if resp.email is None or resp.email == "":
+        print(resp.nickname, resp.email)
         # flash('Invalid login. Please try again.')
         print("Застряли тут!!!")
         return redirect(url_for('login', error='Invalid login. Please try again.'))
