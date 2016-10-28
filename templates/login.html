@@ -1,32 +1,45 @@
-<!-- <<<<<<< HEAD
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Отмени подписку!</title>
-</head>
+{% extends "base.html" %}
+{% block content %}
 
-<body>
+<script type="text/javascript">
+function set_openid(openid, pr)
+{
+    u = openid.search('<username>')
+    if (u != -1) {
+        // openid requires username
+        user = prompt('Enter your ' + pr + ' username:')
+        openid = openid.substr(0, u) + user
+    }
+    form = document.forms['login'];
+    form.elements['openid'].value = openid
+}
+</script>
+
+    <h1>Sign in</h1>>
     {% if error %}
         <h1 style='color: red'>{{ error }}</h1>
-        <p></p>
+        
     {% endif %}
-    <form action="/" method="post">
-        <p><input name="login" value="login"></p>
-        <p><input name="password" value="password"></p>
-        <p><input name="ctn" value="phone number"></p>
-        <p><button>Welcome!</button></p>
+    <form action="/login" method="post" name="login">
+        <p>
+            Phone:
+            {{form.ctn1(size=11)}}
+            {% for error in form.errors.ctn1 %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}<br>            
+        </p>
+
+        <p>
+            OpenId:
+            {{form.openid(size=80)}}
+            {% for error in form.errors.openid %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}<br>
+            |{% for pr in providers %}
+            <a href="javascript:set_openid('{{pr.url}}', '{{pr.name}}');">{{pr.name}}</a> |
+            {% endfor %}
+        </p>
+        <p>{{form.remember_me}} Remember me</p>
+        <p><input type="submit" value="Sign In"></p>
     </form>
-</body> 
-
-
-</html>
-======= -->
-<form action="/" method="POST">
-<div> Введите Номер/Логин/Пароль</div>
-<div><input name="ctn"> НОМЕР </div>
-<div><input name="login"> ЛОГИН </div>
-<div><input name="password"> ПАРОЛЬ </div>
-<div><input type="submit" value ="Войти в личный кабинет"></div>
-{{error}}
-</form>
-<!-- >>>>>>> glebov -->
+{% endblock %}

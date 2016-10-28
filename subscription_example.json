@@ -1,0 +1,24 @@
+{
+	"meta": {
+		"status": "OK",
+		"code": 20000,
+		"message": null
+	},
+	"subscriptions": [
+		{
+			"id": "88888061",
+			"name": "Сервис Билайн «ЭроЛайф»",
+			"tryPrice": null,
+			"buyPrice": 0,
+			"buyPricePeriod": 0,
+			"startDate": "2016-10-25T12:23:24.000+0300",
+			"endFreeDate": "2016-10-31T00:00:00.000+0300",
+			"endDate": null,
+			"tryBuyMode": "TRY",
+			"providerName": null,
+			"providerContact": null,
+			"category": null,
+			"type": "CDP"
+		}
+	]
+}

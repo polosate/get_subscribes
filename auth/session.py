@@ -1,5 +1,5 @@
 import random, string
-from db.models import db_session, Session, User
+from db.models_1 import db_session, Session, User
 from beeline_api.rest_api import get_beeline_token
 from flask import redirect, url_for
 
@@ -54,17 +54,17 @@ def set_session(beeline_token, token, ctn):
     db_session.commit()
 
 
-def authorization(request):
+def authorization(request, fail_redirect, success_redirect):
         our_ctn = request.form.get('ctn')
         our_login = request.form.get('login')
         our_password = request.form.get('password')
         token = request.cookies.get('token')
 
         if not check_token(token):
-            return redirect(url_for('login', error='Включите куки!'))
+            return redirect(url_for(fail_redirect, error='Включите куки!'))
 
         if not get_user(our_ctn):
-            return redirect(url_for('login', error="Не зарегистрирован"))            
+            return redirect(url_for(fail_redirect, error="Не зарегистрирован"))            
         else:
             login = db_session.query(User).filter(User.ctn==our_ctn).first().login
             password = db_session.query(User).filter(User.ctn==our_ctn).first().passwd
@@ -72,9 +72,9 @@ def authorization(request):
             if our_login == login and our_password == password:
                 beeline_token, error_message = get_beeline_token(ADMIN_LOGIN, ADMIN_PWD)
                 if not beeline_token:
-                    return redirect(url_for('login', error=error_message))
+                    return redirect(url_for(fail_redirecth, error=error_message))
                 else:
                     set_session(beeline_token, token, our_ctn)
-                    return redirect(url_for('dashboard'))                    
+                    return redirect(url_for(success_redirect))                    
             else:
-                return redirect(url_for('login', error="Не верный логин и/или пароль"))
+                return redirect(url_for(fail_redirect, error="Не верный логин и/или пароль"))

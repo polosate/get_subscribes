@@ -3,6 +3,7 @@ import requests
 def get_beeline_token(login, password):
     """
     По логину и паролю по api beeline получаем токен билайна
+    пример токена 51BF96B928C8C71124BE61C1BF787B23
     """ 
     url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (login, password)
     
