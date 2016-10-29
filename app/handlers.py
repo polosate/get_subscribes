@@ -1,105 +1,96 @@
 from flask import Flask, abort, request, redirect, url_for, make_response, render_template, flash, g, session
-from beeline_api.rest_api import get_subscribes
+from beeline_api.rest_api import get_subscribes, get_beeline_token
 # from auth.session import set_token, get_session, authorization
-from app.forms import LoginForm
-from app import app, db, lm, oid
-from app.models import User, Ctn
-from flask_login import login_user, logout_user, current_user, login_required
-
-# перенести все рендеры в отдельные темлэйты
-def render_login_form(args, form, providers):
-    return render_template('login.html', form=form, title = 'Home', error=args.get('error'), providers=providers)
+from app.forms import LoginForm, RegistrationForm, is_phone_number_exists
+from app import app, db, lm
+from app.models import User, Ctn, get_user
+from flask_login import login_user, logout_user, current_user, login_required, AnonymousUserMixin
 
 
-# перенести все рендеры в отдельные темлэйты
+class Anonymous(AnonymousUserMixin):
+  def __init__(self):
+    self.login = 'Anonymous'
+
+lm.anonymous_user = Anonymous
+
 def render_dashboard_page(subscriptions_list=None, subscriptions_str = None, errors=None):
     return render_template('dashboard.html', subscriptions_list=subscriptions_list, \
         subscriptions_str = subscriptions_str,errors=errors)
 
-
 @app.before_request
 def before_request():
+    print("current user = ", current_user)
     g.user = current_user
 
-
-def global_ctns():
-    ctns = Ctn.query.all()
-    
-    ctn_list = list(ctn for ctn in ctns)
-    global_ctn = list(ctn.ctn for ctn in ctn_list)
-    return global_ctn
-
+@lm.user_loader
+def load_user(user_id):
+    return get_user(user_id)
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html')
-
+    return render_template('index.html', user=current_user.login)
 
 @app.route('/login', methods=['POST', 'GET'])
-@oid.loginhandler
 def login():
-    print('START!!!!!')
     if request.method == 'GET':
             form = LoginForm()
-            return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
+            return render_template('login.html', form=form, title = 'Home', error=request.args.get('error'))
+
+    if g.user is not None and g.user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    form = LoginForm(request.form)
+    is_form_valid = form.validate()
+
+    if is_phone_number_exists(form.ctn1.data):
+        session['ctn'] = form.ctn1.data
+    
+    if is_form_valid:
+        # ctn = form.ctn1.data
+        login = form.login.data
+        password = form.password.data
+        # session['ctn'] = ctn
+        user = User.query.filter_by(login = login).filter_by(password = password).first()
+        login_user(user)
+        return redirect(url_for('dashboard'))
+    return render_template('login.html', form=form, title = 'Home', error=request.args.get('error'))
+
+
+@app.route('/registration', methods=['POST', 'GET'])
+def registration(): 
+    if 'ctn' in session:
+        ctn = session['ctn']
+    else:
+        ctn = None
+
+    if request.method == 'GET':
+        form = RegistrationForm()
+        return render_template('registration.html', form=form, title = 'Registration', ctn=ctn)
     
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('dashboard'))
 
-    form = LoginForm()
+    form = RegistrationForm(request.form)
+    is_form_valid = form.validate()
+    print(form.errors)
 
-    if not form.validate_on_submit(): 
+    if is_form_valid:
+        login = form.login.data
+        password = form.password.data
         ctn = form.ctn1.data
-        ctn_list = global_ctns()
-        if not ctn in ctn_list:
-            return redirect(url_for('login', error="Номера нет в базе"))  
-        session['ctn'] = ctn
-        session['remember_me'] = form.remember_me.data
-       
-        return oid.try_login(form.openid.data, ask_for = ['nickname', 'email'])
-
-
-    # return render_template('login.html', 
-    #   title = 'Sign In',
-    #   form = form,
-    #   providers = app.config['OPENID_PROVIDERS'])
-
-    # return render_login_form(request.args, form, providers = app.config['OPENID_PROVIDERS'])
-
-
-@app.route('/login', methods=['POST', 'GET'])
-def registration(): pass
-
-
-
-@oid.after_login
-def after_login(resp):
-    if 'ctn' in session:
-        ctn = session['ctn']
-        print()
-    if resp.email is None or resp.email == "":
-        print(resp.nickname, resp.email)
-        # flash('Invalid login. Please try again.')
-        print("Застряли тут!!!")
-        return redirect(url_for('login', error='Invalid login. Please try again.'))
-    user = User.query.filter_by(email = resp.email).first()
-    print(user)
-    if user is None:
-        nickname = resp.nickname
-        if nickname is None or nickname == "":
-            nickname = resp.email.split('@')[0]
-        user = User(nickname = nickname, email = resp.email, ctn = ctn)
+        
+        user = User(login = login, password = password, ctn = ctn)
         db.session.add(user)
         db.session.commit()
-    remember_me = False
-    if 'remember_me' in session:
-        remember_me = session['remember_me']
-        session.pop('remember_me', None)
-    login_user(user, remember = remember_me)
-    return redirect(request.args.get('next') or url_for('dashboard'))
-    # return redirect(url_for('dashboard'))
-    
+
+    # remember_me = False
+    # if 'remember_me' in session:
+    #     remember_me = session['remember_me']
+    #     session.pop('remember_me', None)
+        login_user(user)
+        return redirect(request.args.get('next') or url_for('dashboard'))
+    return render_template('registration.html', form=form, title = 'Registration')
 
 
 @app.route("/dashboard")
@@ -110,23 +101,25 @@ def dashboard():
         # if not session:
         #     return redirect(url_for('login', error="Аутентифицируйтесь, блеа!"))
 
-        # beeline_token = session.beeline_token
-        # ctn = session.get_ctn()
+        bt, _ = get_beeline_token()
+        ctn = session['ctn']
+        print("Отлдака!", bt, ctn)
 
-        # subscriptions, errors = get_subscribes(beeline_token, ctn)
+        subscriptions, errors = get_subscribes(bt, ctn)
 
-        # if not errors:
-        #     if isinstance(subscriptions, list):
-        #         response = render_dashboard_page(subscriptions_list = subscriptions)
-        #     else:
-        #         response = render_dashboard_page(subscriptions_str = subscriptions)
-        # else:
-        #     response = render_dashboard_page(errors = errors)
+        if not errors:
+            if isinstance(subscriptions, list):
+                response = render_dashboard_page(subscriptions_list = subscriptions)
+            else:
+                response = render_dashboard_page(subscriptions_str = subscriptions)
+        else:
+            response = render_dashboard_page(errors = errors)
 
-        return 'response'
+        return response
 
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))

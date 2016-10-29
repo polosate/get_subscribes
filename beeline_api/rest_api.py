@@ -1,12 +1,15 @@
 import requests
 
-def get_beeline_token(login, password):
+
+LOGIN = 'Westek'
+PASSWORD = 'DSsdg3qfdJ'
+
+def get_beeline_token():
     """
     По логину и паролю по api beeline получаем токен билайна
     пример токена 51BF96B928C8C71124BE61C1BF787B23
     """ 
-    url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (login, password)
-    
+    url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (LOGIN, PASSWORD)
     res = requests.get(url)
 
     try:
@@ -21,7 +24,7 @@ def get_beeline_token(login, password):
 
 
 def get_subscribes(beeline_token, ctn):
-    is_stub = False
+    is_stub = True
     if is_stub:
         url = 'http://127.0.0.1:5050/'
     else:

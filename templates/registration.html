@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1>Registration</h1>>
+    {% if error %}
+        <h1 style='color: red'>{{ error }}</h1>
+        
+    {% endif %}
+    <form action="/registration" method="post" name="registration">
+        {{ form.hidden_tag() }}
+        <p>
+            Phone:
+            {% if ctn %}
+                {{ form.ctn1(size=11, value=ctn) }}
+            {% else %}
+                {{ form.ctn1(size=11) }}
+            {% endif %}
+            {% for error in form.errors.ctn1 %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>            
+        </p>
+        <p>
+            Login:
+            {{ form.login(size=50) }}
+            {% for error in form.errors.login %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>            
+        </p>
+        <p>
+            Password:
+            {{ form.password(size=50, type='password') }}
+            {% for error in form.errors.password %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>            
+        </p>
+        <p>
+            Confirm:
+            {{ form.confirm(size=50, type='password') }}
+            {% for error in form.errors.confirm %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}<br>            
+        </p>
+
+{#         <p>{{form.remember_me}} Remember me</p> #}
+        <p><input type="submit" value="Registration and Sign In"></p>
+    </form>
+{% endblock %}
