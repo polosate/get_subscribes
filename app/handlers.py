@@ -1,23 +1,15 @@
 from flask import Flask, abort, request, redirect, url_for, make_response, render_template, flash, g, session
 from beeline_api.rest_api import get_subscribes, get_beeline_token
-# from auth.session import set_token, get_session, authorization
 from app.forms import LoginForm, RegistrationForm, is_phone_number_exists
 from app import app, db, lm
 from app.models import User, Ctn, get_user
 from flask_login import login_user, logout_user, current_user, login_required
 
 
+
 def render_dashboard_page(subscriptions_list=None, subscriptions_str = None, errors=None):
     return render_template('dashboard.html', subscriptions_list=subscriptions_list, \
         subscriptions_str = subscriptions_str,errors=errors)
-
-@app.before_request
-def before_request():
-    g.user = current_user
-
-@lm.user_loader
-def load_user(user_id):
-    return get_user(user_id)
 
 @app.route('/')
 @app.route('/index')
@@ -77,10 +69,6 @@ def registration():
         db.session.add(user)
         db.session.commit()
 
-    # remember_me = False
-    # if 'remember_me' in session:
-    #     remember_me = session['remember_me']
-    #     session.pop('remember_me', None)
         login_user(user)
         return redirect(request.args.get('next') or url_for('dashboard'))
     return render_template('registration.html', form=form, title = 'Registration')
@@ -89,14 +77,8 @@ def registration():
 @app.route("/dashboard")
 @login_required
 def dashboard(): 
-        # token = request.cookies.get('token')
-        # session = get_session(token)
-        # if not session:
-        #     return redirect(url_for('login', error="Аутентифицируйтесь, блеа!"))
-
         bt, _ = get_beeline_token()
         ctn = session['ctn']
-        print("Отлдака!", bt, ctn)
 
         subscriptions, errors = get_subscribes(bt, ctn)
 
