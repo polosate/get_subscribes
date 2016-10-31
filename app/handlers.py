@@ -4,14 +4,8 @@ from beeline_api.rest_api import get_subscribes, get_beeline_token
 from app.forms import LoginForm, RegistrationForm, is_phone_number_exists
 from app import app, db, lm
 from app.models import User, Ctn, get_user
-from flask_login import login_user, logout_user, current_user, login_required, AnonymousUserMixin
+from flask_login import login_user, logout_user, current_user, login_required
 
-
-class Anonymous(AnonymousUserMixin):
-  def __init__(self):
-    self.login = 'Anonymous'
-
-lm.anonymous_user = Anonymous
 
 def render_dashboard_page(subscriptions_list=None, subscriptions_str = None, errors=None):
     return render_template('dashboard.html', subscriptions_list=subscriptions_list, \
@@ -19,7 +13,6 @@ def render_dashboard_page(subscriptions_list=None, subscriptions_str = None, err
 
 @app.before_request
 def before_request():
-    print("current user = ", current_user)
     g.user = current_user
 
 @lm.user_loader
