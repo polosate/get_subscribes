@@ -93,3 +93,4 @@ login.py
 stubs/
 docs/
 *.json
+env2/

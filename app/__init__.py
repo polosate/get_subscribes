@@ -12,6 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
+
 BASE_DIR = '{}/../'.format(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -37,16 +38,16 @@ init_social(app, db_session)
 
 
 lm = LoginManager()
-lm.login_view = 'handlers'
+lm.login_view = 'login'
 lm.anonymous_user = Anonymous
 lm.init_app(app)
 
 from app import handlers, models
-
+from .models import get_user
 
 @lm.user_loader
 def load_user(user_id):
-    return models.User.get_user(user_id)
+    return get_user(user_id)
 
 
 @app.before_request
