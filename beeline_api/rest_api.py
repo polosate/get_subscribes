@@ -23,10 +23,10 @@ def get_beeline_token():
         return None, "Error_%s" % res.status_code
 
 
-def get_subscribes(beeline_token, ctn):
+def get_subscriptions(beeline_token, ctn):
     is_stub = True
     if is_stub:
-        url = 'http://127.0.0.1:5050/'
+        url = 'http://127.0.0.1:5050/get'
     else:
         url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn        
         
@@ -53,6 +53,26 @@ def get_subscribes(beeline_token, ctn):
 
 # https://my.beeline.ru/api/1.0/info/serviceAvailableList?ctn=9060447044
 def get_available_subscriptions(): pass
+
+
+def remove_subscriptions(beeline_token, ctn, subscription_id):
+    is_stub = True
+    if is_stub:
+        url = 'http://127.0.0.1:5050/remove?subscriptionId=%s' % subscription_id
+    else:
+        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn. subscription_id)        
+        
+    cookies = {'token': beeline_token}
+    response = requests.get(url, cookies=cookies)
+
+    response = response.json()
+
+    if response.get('meta').get('code') == 20000:
+        result = 'Скоро отключим, обновите страницу'
+    else:
+        result = response.get('meta').get('message') 
+
+    return result
 
 
 if __name__ == '__main__':

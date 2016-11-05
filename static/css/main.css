@@ -4,3 +4,15 @@ body {
 .btn-group>.btn:first-child {
     margin-top: 15;
 }
+
+.input-group-addon, .input-group-btn {
+    width: 400;
+}
+
+.input-group-addon {
+    background-color: rgba(255,255,255,.15);
+    text-align: left;
+}
+.btn-default {
+    background-color: #eee;
+}
