@@ -5,13 +5,23 @@
         <p>При получении ваших подписок произошла ошибка:</p>
         <p>{{ errors }}</p>
     {% else %}
-        <p>Ваши подписки:</p>
+        <p><h4>Ваши подписки:</h4></p>
         {% if subscriptions_list %}
-            <ul>
-            {% for item in subscriptions_list %}                
-                <li>{{ item }}</li>
+
+            {% for item in subscriptions_list %}   
+            <div class="col-lg-12">
+                <div class="input-group">
+                    <form action="/dashboard" method="POST" name="{{ item.id }}">
+                        <span class="input-group-addon" id="basic-addon3">{{ item.name }}</span>
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit">Remove</button>
+                        </div>
+                        <input type="hidden" name="subscriptionId" value="{{ item.id }}">
+                    </form>
+                </div> 
+            </div>
             {% endfor %}
-            </ul>
+
         {% else %}
             <p>{{ subscriptions_str }}</p>
         {% endif %}
