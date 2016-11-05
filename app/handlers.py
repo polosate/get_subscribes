@@ -61,8 +61,7 @@ def login():
     if is_form_valid:
         login = form.login.data
         password = form.password.data
-        query = User.query.filter_by(login=login).filter_by(password=password)
-        user = query.first()
+        user = User.query.filter_by(login=login).filter_by(password=password).first()
         login_user(user)
         return redirect(url_for('dashboard'))
 
@@ -70,7 +69,8 @@ def login():
         'login.html',
         form=form,
         title='Home',
-        error=request.args.get('error')
+        error=request.args.get('error'))
+
 
 
 @app.route('/registration', methods=['POST', 'GET'])
