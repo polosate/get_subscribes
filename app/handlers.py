@@ -74,23 +74,29 @@ def registration():
     return render_template('registration.html', form=form, title = 'Registration')
 
 
+def get_ctn_for_current_user():
+    if 'ctn' not in session:
+        session['ctn'] =  User.query.filter_by(login=g.user.login).first().ctn
+        print(session['ctn'])
+    return session['ctn']
+
 @app.route("/dashboard")
 @login_required
 def dashboard(): 
-        bt, _ = get_beeline_token()
-        ctn = session['ctn']
+    bt, _ = get_beeline_token()
+    ctn = get_ctn_for_current_user()
 
-        subscriptions, errors = get_subscribes(bt, ctn)
+    subscriptions, errors = get_subscribes(bt, ctn)
 
-        if not errors:
-            if isinstance(subscriptions, list):
-                response = render_dashboard_page(subscriptions_list = subscriptions)
-            else:
-                response = render_dashboard_page(subscriptions_str = subscriptions)
+    if not errors:
+        if isinstance(subscriptions, list):
+            response = render_dashboard_page(subscriptions_list = subscriptions)
         else:
-            response = render_dashboard_page(errors = errors)
+            response = render_dashboard_page(subscriptions_str = subscriptions)
+    else:
+        response = render_dashboard_page(errors = errors)
 
-        return response
+    return response
 
 
 @app.route('/logout')

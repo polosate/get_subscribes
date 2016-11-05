@@ -52,8 +52,7 @@ def load_user(user_id):
 
 @app.before_request
 def global_user():
-    # evaluate proxy value
-    g.user = current_user._get_current_object()
+     g.user = current_user._get_current_object()
 
 
 @app.teardown_appcontext
