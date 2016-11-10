@@ -3,6 +3,7 @@ import requests
 
 LOGIN = 'Westek'
 PASSWORD = 'DSsdg3qfdJ'
+is_stub = True
 
 def get_beeline_token():
     """
@@ -24,7 +25,6 @@ def get_beeline_token():
 
 
 def get_subscriptions(beeline_token, ctn):
-    is_stub = True
     if is_stub:
         url = 'http://127.0.0.1:5050/get'
     else:
@@ -50,13 +50,11 @@ def get_subscriptions(beeline_token, ctn):
         return None, "Error_%s" % response.status_code
 
 
-
 # https://my.beeline.ru/api/1.0/info/serviceAvailableList?ctn=9060447044
 def get_available_subscriptions(): pass
 
 
 def remove_subscriptions(beeline_token, ctn, subscription_id):
-    is_stub = True
     if is_stub:
         url = 'http://127.0.0.1:5050/remove?subscriptionId=%s' % subscription_id
     else:

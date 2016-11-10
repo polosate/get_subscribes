@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <form action="/askphone" method="post">
+        {{ form.hidden_tag() }}
+
+        <label for="ctn">Phone</label>
+        <div class="input-group">
+            {{form.ctn1(size=30, type='text', class='form-control', id='ctn')}}
+            
+            {% for error in form.ctn1.errors %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}<br>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-default btn-lg">SIgn In</button>
+        </div>
+    </form>
+
+{% endblock %}

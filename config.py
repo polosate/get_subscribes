@@ -23,7 +23,7 @@ DEBUG_TB_INTERCEPT_REDIRECTS = False
 SESSION_PROTECTION = 'strong'
 
 SOCIAL_AUTH_LOGIN_URL = '/'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/dashboard'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/askphone'
 SOCIAL_AUTH_USER_MODEL = 'app.models.User'
 SOCIAL_AUTH_FIELDS_STORED_IN_SESSION = ['keep']
 SOCIAL_AUTH_REMEMBER_SESSION_NAME = 'remember_me'
@@ -34,9 +34,5 @@ SOCIAL_AUTH_GITHUB_KEY = 'eba194d2ec1ee182a145'
 SOCIAL_AUTH_GITHUB_SECRET = '84954f2060793cfe37e028726a097c6ea4b49585'
 
 SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOAuth2',
-    'social.backends.google.GoogleOAuth',
-    'social.backends.google.GooglePlusAuth',
     'social.backends.github.GithubOAuth2',
  )
-

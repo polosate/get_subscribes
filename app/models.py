@@ -6,15 +6,14 @@ from flask.ext.login import UserMixin
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    login = Column(String(120), index=True, unique=True)
+    username = Column(String(120), index=True, unique=True)
     password = Column(String(120), index=True, unique=True)
     ctn = Column(String(11), ForeignKey('ctns.ctn'), index=True, unique=True)
-    username = Column(String(120), index=True, unique=True)
     email = Column(String(120), index=True, unique=True)
     # user_sessions = db.relationship('UserSession', backref = 'user', lazy = 'dynamic')
 
     def __repr__(self):
-        return '<User {} {}>'.format(self.login, self.ctn)
+        return '<User {} {}>'.format(self.username, self.ctn)
 
 
 class Ctn(db.Model):
@@ -31,5 +30,5 @@ def is_phone_number_exists(ctn):
 def is_user_registrated(ctn):
     return User.query.filter_by(ctn=ctn).first()
 
-def is_login_exists(login):
-    return User.query.filter_by(login=login).first()
+def is_login_exists(username):
+    return User.query.filter_by(username=username).first()

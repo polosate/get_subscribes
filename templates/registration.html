@@ -9,6 +9,15 @@
     <form action="/registration" method="post">
         {{ form.hidden_tag() }}
 
+        <label for="email">Email</label>
+        <div class="input-group">
+            {{form.email(size=30, type='text', class='form-control', id='ctn')}}
+            
+            {% for error in form.email.errors %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}<br>
+        </div>
+
         <label for="ctn">Phone</label>
         <div class="input-group">
             {% if ctn %}
@@ -21,10 +30,10 @@
             {% endfor %}<br>
         </div>
 
-        <label for="login">Login</label>
+        <label for="username">Username</label>
         <div class="input-group">
-            {{form.login(size=30, type="text", class="form-control", id="login")}}            
-            {% for error in form.login.errors %}
+            {{form.username(size=30, type="text", class="form-control", id="username")}}            
+            {% for error in form.username.errors %}
                 <span style="color: red;">[{{error}}]</span>
             {% endfor %}<br>
         </div>

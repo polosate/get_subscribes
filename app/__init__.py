@@ -12,18 +12,17 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
-
 BASE_DIR = '{}/../'.format(os.path.dirname(os.path.abspath(__file__)))
-
 
 
 class Anonymous(AnonymousUserMixin):
   def __init__(self):
-    self.login = 'Anonymous'
+    self.username = 'Anonymous'
 
 
 template_folder= os.path.join(BASE_DIR, 'templates')
 static_folder = os.path.join(BASE_DIR, 'static')
+
 
 app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
 app.config.from_object('config')
@@ -35,7 +34,6 @@ db_session = scoped_session(Session)
 
 app.register_blueprint(social_auth)
 init_social(app, db_session)
-
 
 lm = LoginManager()
 lm.login_view = 'login'
@@ -52,7 +50,7 @@ def load_user(user_id):
 
 @app.before_request
 def global_user():
-     g.user = current_user._get_current_object()
+    g.user = current_user._get_current_object()
 
 
 @app.teardown_appcontext
@@ -71,6 +69,5 @@ def inject_user():
         return {'user': g.user}
     except AttributeError:
         return {'user': None}
-
-
+        
 app.context_processor(backends)

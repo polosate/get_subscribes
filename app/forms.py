@@ -10,7 +10,7 @@ def is_ctn_exists(form, field):
 
 def is_login_busy(form, field):
     if is_login_exists(field.data):
-        raise ValidationError('Login already busy')
+        raise ValidationError('Username already busy')
 
 def is_user_exists(form, field):
     if not is_user_registrated(field.data):
@@ -21,12 +21,11 @@ def is_user_not_exists(form, field):
         raise ValidationError('User already exists')
 
 
-
-
 class LoginForm(Form):
-    ctn1 = TextField('ctn1', validators = [Required(), is_ctn_exists, is_user_exists])
-    login = TextField('login', validators = [Required()])
+    ctn1 = TextField('ctn1', validators = [Required(), is_user_exists])
+    username = TextField('username', validators = [Required()])
     password = PasswordField('password', validators = [Required()])
+
     # remember_me = BooleanField('remember_me', default = False)
 
     def validate(self):
@@ -34,10 +33,9 @@ class LoginForm(Form):
         if not rv:
             return False        
 
-        user = User.query.filter_by(login = self.login.data).first()
-        if not user:
-            self.login.errors.append('Unknown username')
-
+        username = User.query.filter_by(username = self.username.data).first()
+        if not username:
+            self.username.errors.append('Unknown username')
             return False
 
         password = User.query.filter_by(password = self.password.data).first()
@@ -45,12 +43,21 @@ class LoginForm(Form):
             self.password.errors.append('Invalid password')
             return False
 
+        user = User.query.filter_by(username = self.username.data).filter_by(ctn = self.ctn1.data).first()
+        if not user:
+            self.password.errors.append('Invalid username or phone number')
+            return False
+
         return True
 
 
 class RegistrationForm(Form):
     ctn1 = TextField('ctn1', validators = [Required(), is_ctn_exists, is_user_not_exists])
-    login = TextField('login', validators = [Required(), is_login_busy])
+    username = TextField('username', validators = [Required(), is_login_busy])
     password = PasswordField('password', validators = [Required(), EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('confirm', validators = [Required()])
+    email = TextField('email')
 
+
+class AskPhoneForm(Form):
+    ctn1 = TextField('ctn1', validators = [Required(), is_ctn_exists, is_user_not_exists])

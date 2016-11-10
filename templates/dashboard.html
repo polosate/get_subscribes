@@ -5,7 +5,7 @@
         <p>При получении ваших подписок произошла ошибка:</p>
         <p>{{ errors }}</p>
     {% else %}
-        <p><h4>Ваши подписки:</h4></p>
+        <h3>Your subscriptions:</h3>
         {% if subscriptions_list %}
 
             {% for item in subscriptions_list %}   
@@ -27,8 +27,6 @@
         {% endif %}
     {% endif %}
 
-
-    <p>You are logged in as {{ user.login }}!</p>
 
 {% endblock %}
 

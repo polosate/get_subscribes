@@ -18,11 +18,11 @@
             {% endfor %}<br>
         </div>
 
-        <label for="login">Login</label>
+        <label for="username">Username</label>
         <div class="input-group">
-            {{form.login(size=30, type="text", class="form-control", id="login")}}
+            {{form.username(size=30, type="text", class="form-control", id="username")}}
             
-            {% for error in form.login.errors %}
+            {% for error in form.username.errors %}
                 <span style="color: red;">[{{error}}]</span>
             {% endfor %}<br>
         </div>
