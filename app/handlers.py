@@ -4,7 +4,8 @@ from flask import request, redirect, url_for, render_template, \
 from beeline_api.rest_api import get_subscriptions, \
     get_beeline_token, remove_subscriptions
 from flask_login import login_user, logout_user, current_user, login_required
-from app.forms import LoginForm, RegistrationForm, AskPhoneForm, is_phone_number_exists
+from app.forms import LoginForm, RegistrationForm, AskPhoneForm, \
+    EditProfile, is_phone_number_exists
 from app import app, db, lm
 from app.models import User, get_user
 
@@ -156,12 +157,36 @@ def dashboard():
 @app.route('/user/<username>')
 @login_required
 def user(username):
+    if current_user.username != username:
+        flash('Bad credentials. You sre not logged In as ' + username )
+        return redirect(url_for('user', username=current_user.username))
     user = User.query.filter_by(username=username).first()
     if user == None:
         flash('User ' + username + ' not found.')
         return redirect(url_for('index'))
-    return render_template('user.html', user=user)
+    return render_template('user.html', username=username)
 
+
+
+@app.route('/edit/<username>', methods=['POST', 'GET'])
+@login_required
+def edit(username):
+    user = User.query.filter_by(username=username).first()
+
+    if request.method == 'GET':
+        form = EditProfile()
+        form.about_me.data=user.about_me
+        return render_template('edit.html', form=form, title='Edit profile', user=current_user)
+    else:
+        form = EditProfile(request.form)        
+        #is_form_valid = form.validate()
+        
+        user.ctn = form.ctn1.data
+        user.birth_day = form.birth_day.data
+        user.about_me = form.about_me.data
+        db.session.commit()
+
+        return render_template('user.html', user=user)
 
 
 @app.route('/logout')

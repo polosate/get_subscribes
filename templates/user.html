@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 	
-	{{ user.username }}
+	<p>{{ user.username }}</p>
+	<p>{{ user.ctn }}</p>	
+	<p>{{ user.birth_day }}</p>	
+	<p>{{ user.about_me }}</p>
+
+	<a href="{{ url_for('edit', username = g.user.username) }}">Edit profile</a>
+	
 
 {% endblock %}

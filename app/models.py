@@ -1,5 +1,5 @@
 from app import db
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean
+from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Date
 from flask.ext.login import UserMixin
 
 
@@ -10,7 +10,8 @@ class User(db.Model, UserMixin):
     password = Column(String(120), index=True, unique=True)
     ctn = Column(String(11), ForeignKey('ctns.ctn'), index=True, unique=True)
     email = Column(String(120), index=True, unique=True)
-    # user_sessions = db.relationship('UserSession', backref = 'user', lazy = 'dynamic')
+    birth_day = Column(Date)
+    about_me = Column(Text)
 
     def __repr__(self):
         return '<User {} {}>'.format(self.username, self.ctn)
@@ -20,7 +21,7 @@ class Ctn(db.Model):
     __tablename__ = 'ctns'
     ctn = Column(String(11), primary_key=True)
 
-    
+
 def get_user(user_id):
     return User.query.filter_by(id=user_id).first()
 
