@@ -9,6 +9,8 @@ from app.forms import LoginForm, RegistrationForm, AskPhoneForm, \
 from app import app, db, lm
 from app.models import User, get_user
 
+from celeryapp.tasks import check_subscriptions
+
 
 def render_dashboard_page(
         subscriptions_list=None,
@@ -53,7 +55,7 @@ def login():
         username = form.username.data
         password = form.password.data
         user = User.query.filter_by(username=username).filter_by(password=password).first()
-        login_user(user), 
+        login_user(user),
         return redirect(request.args.get('next') or url_for('dashboard'))
 
     return render_template(
@@ -65,33 +67,33 @@ def login():
 
 @app.route('/askphone', methods=['POST', 'GET'])
 def askphone():
-    
+
     username = g.user.username
     if not User.query.filter_by(username=username).first().ctn:
 
         if request.method == 'GET':
             form = AskPhoneForm()
             return render_template('askphone.html', form=form, title='Phone')
-       
-        
+
+
         form = AskPhoneForm(request.form)
         is_form_valid = form.validate()
-        
+
         if is_form_valid:
-            ctn = form.ctn1.data            
+            ctn = form.ctn1.data
             user = User.query.filter_by(username=username).first()
             user.ctn = ctn
             db.session.add(user)
-            db.session.commit()                
+            db.session.commit()
             login_user(user)
             return redirect(request.args.get('next') or url_for('dashboard'))
         return render_template('askphone.html', form=form)
 
     return redirect(request.args.get('next') or url_for('dashboard'))
-        
+
 
 @app.route('/registration', methods=['POST', 'GET'])
-def registration(): 
+def registration():
     if 'ctn' in session:
         ctn = session['ctn']
     else:
@@ -100,7 +102,7 @@ def registration():
     if request.method == 'GET':
         form = RegistrationForm()
         return render_template('registration.html', form=form, title='Registration', ctn=ctn)
-    
+
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('dashboard'))
 
@@ -112,7 +114,7 @@ def registration():
         password = form.password.data
         ctn = form.ctn1.data
         email = form.email.data
-        
+
         user = User(username=username, password=password, ctn=ctn, email = email)
         db.session.add(user)
         db.session.commit()
@@ -131,15 +133,17 @@ def get_ctn_for_current_user():
 
 @app.route("/dashboard", methods=['POST', 'GET'])
 @login_required
-def dashboard(): 
+def dashboard():
     bt, _ = get_beeline_token()
     ctn = get_ctn_for_current_user()
 
     if request.method == "POST":
-        subscriptionId = request.args.get("subscriptionId")
+        # subscriptionId = request.args.get("subscriptionId")
+        subscriptionId = request.form['subscriptionId']
         response_message = remove_subscriptions(bt, ctn, subscriptionId)
-        flash(response_message)
-        return redirect(url_for('dashboard'))        
+        res = check_subscriptions.delay(bt, ctn, subscriptionId)
+        flash(res.get())
+        return redirect(url_for('dashboard'))
 
     subscriptions, errors = get_subscriptions(bt, ctn)
 
@@ -178,9 +182,9 @@ def edit(username):
         form.about_me.data=user.about_me
         return render_template('edit.html', form=form, title='Edit profile', user=current_user)
     else:
-        form = EditProfile(request.form)        
+        form = EditProfile(request.form)
         #is_form_valid = form.validate()
-        
+
         user.ctn = form.ctn1.data
         user.birth_day = form.birth_day.data
         user.about_me = form.about_me.data

@@ -9,7 +9,7 @@ def get_beeline_token():
     """
     По логину и паролю по api beeline получаем токен билайна
     пример токена 51BF96B928C8C71124BE61C1BF787B23
-    """ 
+    """
     url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (LOGIN, PASSWORD)
     res = requests.get(url)
 
@@ -28,8 +28,8 @@ def get_subscriptions(beeline_token, ctn):
     if is_stub:
         url = 'http://127.0.0.1:5050/get'
     else:
-        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn        
-        
+        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
+
     cookies = {'token': beeline_token}
     response = requests.get(url, cookies=cookies)
     try:
@@ -43,8 +43,8 @@ def get_subscriptions(beeline_token, ctn):
                 result = subscribes_list
                 return result, None
         else:
-            result = response.get('meta').get('message')   
-            return None, result         
+            result = response.get('meta').get('message')
+            return None, result
 
     except Exception:
         return None, "Error_%s" % response.status_code
@@ -58,8 +58,8 @@ def remove_subscriptions(beeline_token, ctn, subscription_id):
     if is_stub:
         url = 'http://127.0.0.1:5050/remove?subscriptionId=%s' % subscription_id
     else:
-        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn. subscription_id)        
-        
+        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn, subscription_id)        
+
     cookies = {'token': beeline_token}
     response = requests.get(url, cookies=cookies)
 
@@ -68,7 +68,7 @@ def remove_subscriptions(beeline_token, ctn, subscription_id):
     if response.get('meta').get('code') == 20000:
         result = 'Скоро отключим, обновите страницу'
     else:
-        result = response.get('meta').get('message') 
+        result = response.get('meta').get('message')
 
     return result
 
