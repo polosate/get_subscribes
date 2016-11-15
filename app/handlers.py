@@ -154,7 +154,6 @@ def dashboard():
             response = render_dashboard_page(subscriptions_str = subscriptions)
     else:
         response = render_dashboard_page(errors = errors)
-
     return response
 
 
