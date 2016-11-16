@@ -22,6 +22,15 @@ class Ctn(db.Model):
     ctn = Column(String(11), primary_key=True)
 
 
+class Tasks(db.Model):
+    __tablename__ = 'check_subscriptions'
+    task_id = Column(String, primary_key=True, index=True)
+    subscription_id = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'), index=True)
+    status = Column(String)
+
+
+
 def get_user(user_id):
     return User.query.filter_by(id=user_id).first()
 

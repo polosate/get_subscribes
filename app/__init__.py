@@ -43,6 +43,7 @@ lm.init_app(app)
 from app import handlers, models
 from .models import get_user
 
+
 @lm.user_loader
 def load_user(user_id):
     return get_user(user_id)
@@ -59,7 +60,6 @@ def commit_on_success(error=None):
         db_session.commit()
     else:
         db_session.rollback()
-
     db_session.remove()
 
 
@@ -69,5 +69,5 @@ def inject_user():
         return {'user': g.user}
     except AttributeError:
         return {'user': None}
-        
+
 app.context_processor(backends)

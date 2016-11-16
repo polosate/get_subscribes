@@ -1,8 +1,7 @@
 from flask import request, redirect, url_for, render_template, \
     flash, g, session
 
-from beeline_api.rest_api import get_subscriptions, \
-    get_beeline_token, remove_subscriptions
+from beeline_api.rest_api import get_subscriptions, remove_subscriptions
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, RegistrationForm, AskPhoneForm, \
     EditProfile, is_phone_number_exists
@@ -130,22 +129,19 @@ def get_ctn_for_current_user():
         print(session['ctn'])
     return session['ctn']
 
-
 @app.route("/dashboard", methods=['POST', 'GET'])
 @login_required
 def dashboard():
-    bt, _ = get_beeline_token()
     ctn = get_ctn_for_current_user()
-
     if request.method == "POST":
         # subscriptionId = request.args.get("subscriptionId")
         subscriptionId = request.form['subscriptionId']
-        response_message = remove_subscriptions(bt, ctn, subscriptionId)
-        res = check_subscriptions.delay(bt, ctn, subscriptionId)
-        flash(res.get())
+        response_message = remove_subscriptions(ctn, subscriptionId)
+        res = check_subscriptions.delay(ctn, subscriptionId, g.current_user.id)
+
         return redirect(url_for('dashboard'))
 
-    subscriptions, errors = get_subscriptions(bt, ctn)
+    subscriptions, errors = get_subscriptions(ctn)
 
     if not errors:
         if isinstance(subscriptions, list):

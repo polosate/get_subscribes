@@ -5,6 +5,8 @@ LOGIN = 'Westek'
 PASSWORD = 'DSsdg3qfdJ'
 is_stub = True
 
+
+
 def get_beeline_token():
     """
     По логину и паролю по api beeline получаем токен билайна
@@ -24,13 +26,14 @@ def get_beeline_token():
         return None, "Error_%s" % res.status_code
 
 
-def get_subscriptions(beeline_token, ctn):
+def get_subscriptions(ctn):
+    bt, _ = get_beeline_token()
     if is_stub:
         url = 'http://127.0.0.1:5050/get'
     else:
         url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
 
-    cookies = {'token': beeline_token}
+    cookies = {'token': bt}
     response = requests.get(url, cookies=cookies)
     try:
         response = response.json()
@@ -54,13 +57,14 @@ def get_subscriptions(beeline_token, ctn):
 def get_available_subscriptions(): pass
 
 
-def remove_subscriptions(beeline_token, ctn, subscription_id):
+def remove_subscriptions(ctn, subscription_id):
+    bt, _ = get_beeline_token()
     if is_stub:
         url = 'http://127.0.0.1:5050/remove?subscriptionId=%s' % subscription_id
     else:
-        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn, subscription_id)        
+        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn, subscription_id)
 
-    cookies = {'token': beeline_token}
+    cookies = {'token': bt}
     response = requests.get(url, cookies=cookies)
 
     response = response.json()
