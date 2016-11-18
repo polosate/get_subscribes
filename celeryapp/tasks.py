@@ -1,16 +1,14 @@
 from celeryapp.celery import celapp
 from beeline_api.rest_api import get_subscriptions
 from celery.exceptions import MaxRetriesExceededError
-from app import db
-from app.models import Tasks
 
 
 @celapp.task(bind=True, default_retry_delay=1, max_retries=60)
-def check_subscriptions(self, ctn, subscription_id, uesr_id):
+def check_subscriptions(self, db, ctn, subscription_id, uesr_id):
     task = Tasks.query.filter_by(task_id=self.request.id)
     if not task:
         task = Task(task_id=self.request.id, subscription_id=subscription_id, user_id=user_id, status=self.request.state)
-        ds.session.add(task)
+        db.session.add(task)
         db.session.commit()
     else:
         task.status = self.request.state

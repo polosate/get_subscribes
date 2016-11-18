@@ -13,7 +13,7 @@ LOGIN = 'postgres'
 PASSWORD = 'postgres'
 HOST = 'localhost'
 PORT = 5432
-SCHEMA = 'mydb_1'    
+SCHEMA = 'mydb_1'
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}:{}/{}'.format(LOGIN, PASSWORD, HOST, PORT, SCHEMA)
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')

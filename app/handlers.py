@@ -137,7 +137,7 @@ def dashboard():
         # subscriptionId = request.args.get("subscriptionId")
         subscriptionId = request.form['subscriptionId']
         response_message = remove_subscriptions(ctn, subscriptionId)
-        res = check_subscriptions.delay(ctn, subscriptionId, g.current_user.id)
+        res = check_subscriptions.delay(db, ctn, subscriptionId, g.user.id)
 
         return redirect(url_for('dashboard'))
 
