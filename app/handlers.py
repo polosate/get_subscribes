@@ -5,8 +5,8 @@ from beeline_api.rest_api import get_subscriptions, remove_subscriptions
 from flask_login import login_user, logout_user, current_user, login_required
 from app.forms import LoginForm, RegistrationForm, AskPhoneForm, \
     EditProfile, is_phone_number_exists
-from app import app, db, lm
-from app.models import User, get_user
+from app import app, db
+from app.models import User
 
 from celeryapp.tasks import check_subscriptions
 

@@ -93,4 +93,4 @@ login.py
 *~
 docs/
 *.json
-
+.idea/

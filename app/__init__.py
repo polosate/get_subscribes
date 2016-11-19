@@ -2,7 +2,7 @@ from flask import Flask, g
 import os.path
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, AnonymousUserMixin, current_user
-from config import basedir
+# from config import basedir
 
 from social.apps.flask_app.routes import social_auth
 from social.apps.flask_app.template_filters import backends
