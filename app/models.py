@@ -27,9 +27,6 @@ class Tasks(db.Model):
     task_id = Column(String, primary_key=True, index=True)
     subscription_id = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'), index=True)
-    status = Column(String)
-
-
 
 def get_user(user_id):
     return User.query.filter_by(id=user_id).first()

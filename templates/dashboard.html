@@ -11,13 +11,31 @@
             {% for item in subscriptions_list %}   
             <div class="col-lg-12">
                 <div class="input-group">
-                    <form action="/dashboard" method="POST" name="{{ item.id }}">
-                        <span class="input-group-addon" id="basic-addon3">{{ item.name }}</span>
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" type="submit">Remove</button>
-                        </div>
-                        <input type="hidden" name="subscriptionId" value="{{ item.id }}">
-                    </form>
+                    {% if item.status == 0 %}
+                        <form action="/dashboard" method="POST" name="{{ item.id }}">
+                            <span class="input-group-addon" id="basic-addon3">{{ item.name }}</span>
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Remove</button>
+                            </div>
+                            <input type="hidden" name="subscriptionId" value="{{ item.id }}">
+                        </form>
+                    {% elif item.status == 1 %}
+                        <form action="/dashboard" method="POST" name="{{ item.id }}">
+                            <span class="input-group-addon" id="basic-addon3">{{ item.name }}</span>
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit" disabled="disabled">Awaiting removing</button>
+                            </div>
+                            <input type="hidden" name="subscriptionId" value="{{ item.id }}">
+                        </form>
+                    {% elif item.status == 2 %}
+                        <form action="/dashboard" method="POST" name="{{ item.id }}">
+                            <span class="input-group-addon" id="basic-addon3">{{ item.name }}</span>
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Try one more</button>
+                            </div>
+                            <input type="hidden" name="subscriptionId" value="{{ item.id }}">
+                        </form>
+                    {%  endif %}
                 </div> 
             </div>
             {% endfor %}
