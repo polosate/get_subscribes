@@ -1,5 +1,7 @@
+from datetime import date
 from flask import request, redirect, url_for, render_template, \
     flash, g, session
+
 
 from beeline_api.rest_api import get_subscriptions, remove_subscriptions
 from flask_login import login_user, logout_user, current_user, login_required
@@ -155,6 +157,13 @@ def dashboard():
         if isinstance(subscriptions, list):
             subscription_status = {'Exists': 0, 'Awaiting removing': 1, 'Removing error': 2}
             subscription_ids = [subscription['id'] for subscription in subscriptions]
+            # tasks = Tasks.query.filter_by(user_id=g.user.id).all()
+            # ids = []
+            # for task in tasks:
+            #     ids.append(task.subscription_id)
+            # if set(ids) != set(subscription_ids):
+            #     removed_sub_id = list(set(ids) - set(subscription_ids))[0]
+            #     print(removed_sub_id)
             for subscription_id in subscription_ids:
                 task = Tasks.query.filter_by(subscription_id=subscription_id).filter_by(user_id=g.user.id).first()
                 if not task:
@@ -203,12 +212,15 @@ def edit(username):
         return render_template('edit.html', form=form, title='Edit profile', user=current_user)
     else:
         form = EditProfile(request.form)
-        user.ctn = form.ctn1.data
-        user.birth_day = form.birth_day.data
-        user.about_me = form.about_me.data
-        db.session.commit()
-
-        return render_template('user.html', user=user)
+        is_form_valid = form.validate()
+        if is_form_valid:
+            user.ctn = form.ctn1.data
+            user.birth_day = date(int(form.year.data), int(form.month.data), int(form.day.data))
+            user.about_me = form.about_me.data
+            db.session.commit()
+            return render_template('user.html', user=user)
+        else:
+            return render_template('edit.html', form=form, title='Edit profile', user=current_user)
 
 
 @app.route('/logout')

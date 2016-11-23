@@ -3,10 +3,10 @@ from return_json import return_schema
 
 app = Flask(__name__)
 
+
 @app.route('/get')
 def get():
     response = return_schema
-
     return jsonify(**response)
 
 

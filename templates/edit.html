@@ -2,6 +2,7 @@
 {% block content %}
 	
     <form action="{{ url_for('edit', username = g.user.username) }}" method="post">
+        {{ form.hidden_tag() }}
 
         <label for="ctn">Phone</label>
         <div class="input-group">
@@ -12,20 +13,25 @@
             {% endfor %}<br>
         </div>
 
-        <label for="birth_day">Birthday</label>
+        <label for="year">Birthday</label>
         <div class="input-group">
-            {{form.birth_day(size=30, type="text", class="form-control", id="birth_day", value=user.birth_day)}}
+            {{form.year(size=4, type="text", id="year", placeholder="YYYY", value=user.birth_day.year)}}
+            {{form.month(size=2, type="text", id="month", placeholder="mm", value=user.birth_day.month)}}
+            {{form.day(size=2, type="text", id="day", placeholder="dd", value=user.birth_day.day)}}
             
-            {% for error in form.birth_day.errors %}
+            {% for error in form.year.errors %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}
+            {% for error in form.month.errors %}
+                <span style="color: red;">[{{error}}]</span>
+            {% endfor %}
+            {% for error in form.day.errors %}
                 <span style="color: red;">[{{error}}]</span>
             {% endfor %}<br>
         </div>
 
         <label for="about_me">About me</label>
         <div class="input-group">
-        	
-            <!--{{form.about_me(size=30, type="text", class="form-control", id="about_me", value=user.about_me)}}-->
-            
             {{form.about_me(id="about_me", text=user.about_me, cols=37, rows=5)}}
             
             {% for error in form.about_me.errors %}

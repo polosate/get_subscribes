@@ -1,6 +1,6 @@
 from app import db
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey, Text, Boolean, Date
-from flask.ext.login import UserMixin
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date
+from flask_login import UserMixin
 
 
 class User(db.Model, UserMixin):
@@ -10,8 +10,8 @@ class User(db.Model, UserMixin):
     password = Column(String(120), index=True, unique=True)
     ctn = Column(String(11), ForeignKey('ctns.ctn'), index=True, unique=True)
     email = Column(String(120), index=True, unique=True)
-    birth_day = Column(Date)
-    about_me = Column(Text)
+    birth_day = Column(Date, nullable=True)
+    about_me = Column(Text, nullable=True)
 
     def __repr__(self):
         return '<User {} {}>'.format(self.username, self.ctn)
