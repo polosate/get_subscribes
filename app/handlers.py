@@ -134,6 +134,24 @@ def registration():
     return render_template('registration.html', form=form, title = 'Registration')
 
 
+def show_removed_subscriptions(subscription_ids):
+    tasks = Tasks.query.filter_by(user_id=g.user.id).all()
+    ids = []
+    for task in tasks:
+        if check_subscriptions.AsyncResult(task.task_id).successful():
+            ids.append(task.subscription_id)
+            db.session.delete(task)
+            db.session.commit()
+
+    removed_sub_id = []
+    for id in ids:
+        if id not in subscription_ids:
+            removed_sub_id.append(id)
+
+    for subs in removed_sub_id:
+        flash('Subscription ' + subs + ' removed.')
+
+
 @app.route("/dashboard", methods=['POST', 'GET'])
 @login_required
 def dashboard():
@@ -157,13 +175,9 @@ def dashboard():
         if isinstance(subscriptions, list):
             subscription_status = {'Exists': 0, 'Awaiting removing': 1, 'Removing error': 2}
             subscription_ids = [subscription['id'] for subscription in subscriptions]
-            # tasks = Tasks.query.filter_by(user_id=g.user.id).all()
-            # ids = []
-            # for task in tasks:
-            #     ids.append(task.subscription_id)
-            # if set(ids) != set(subscription_ids):
-            #     removed_sub_id = list(set(ids) - set(subscription_ids))[0]
-            #     print(removed_sub_id)
+
+            show_removed_subscriptions(subscription_ids)
+
             for subscription_id in subscription_ids:
                 task = Tasks.query.filter_by(subscription_id=subscription_id).filter_by(user_id=g.user.id).first()
                 if not task:
@@ -208,7 +222,7 @@ def edit(username):
     user = User.query.filter_by(username=username).first()
     if request.method == 'GET':
         form = EditProfile()
-        form.about_me.data=user.about_me
+        form.about_me.data = user.about_me
         return render_template('edit.html', form=form, title='Edit profile', user=current_user)
     else:
         form = EditProfile(request.form)
