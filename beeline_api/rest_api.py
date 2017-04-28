@@ -12,7 +12,7 @@ def get_beeline_token():
     По логину и паролю по api beeline получаем токен билайна
     пример токена 51BF96B928C8C71124BE61C1BF787B23
     """
-    url = 'https://my.beeline.ru/api/1.0/auth?login=%s&password=%s' % (LOGIN, PASSWORD)
+    url = '=%s' % (LOGIN, PASSWORD)
     res = requests.get(url)
 
     try:
@@ -31,7 +31,7 @@ def get_subscriptions(ctn):
     if is_stub:
         url = 'http://127.0.0.1:5050/get'
     else:
-        url = 'https://my.beeline.ru/api/1.0/info/subscriptions?ctn=%s' % ctn
+        url = '=%s' % ctn
 
     cookies = {'token': bt}
     response = requests.get(url, cookies=cookies)
@@ -62,7 +62,7 @@ def remove_subscriptions(ctn, subscription_id):
     if is_stub:
         url = 'http://127.0.0.1:5050/remove?subscriptionId=%s' % subscription_id
     else:
-        url = 'https://my.beeline.ru/api/1 /1.0/request/subscription/remove?ctn={}&subscriptionId={}'.format(ctn, subscription_id)
+        url = '={}&subscriptionId={}'.format(ctn, subscription_id)
 
     cookies = {'token': bt}
     response = requests.get(url, cookies=cookies)
