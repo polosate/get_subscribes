@@ -1,8 +1,8 @@
 import requests
 
 
-LOGIN = 'Westek'
-PASSWORD = 'DSsdg3qfdJ'
+LOGIN = ''
+PASSWORD = ''
 is_stub = True
 
 
